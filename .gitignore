@@ -16,3 +16,7 @@ venv/
 
 # ignore sql files
 db.sqlite3
+
+# ignore static files
+staticfiles
+staticfiles/
