@@ -13,3 +13,6 @@ __pycache__/
 # ignore dirs and files from virtual environments
 venv/
 .venv
+
+# ignore sql files
+db.sqlite3
