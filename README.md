@@ -145,3 +145,9 @@ django_prod/
 ▪️sqlparse
 ▪️and some other additional reqs
 ```
+
+---
+
+## 🌐 This is how it looks like
+
+![image](https://github.com/user-attachments/assets/021978c5-9c44-45d4-9589-eb30b26c02b2)
