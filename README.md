@@ -1,6 +1,5 @@
 # 🖥 Django project backend dev
 
----
 
 ## 🏫 **This is a project written during studying in IT Career Hub**
 p.s. you can also use this backend structure for your website.
