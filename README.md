@@ -137,6 +137,7 @@ django_prod/
 ---
 
 ## ⚙️ Tech stack / requirements
+```
 ▪️Django
 ▪️django-environ
 ▪️pytest
@@ -144,3 +145,4 @@ django_prod/
 ▪️selenium
 ▪️sqlparse
 ▪️and some other additional reqs
+```
