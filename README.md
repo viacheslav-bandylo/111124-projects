@@ -29,7 +29,7 @@ django_prod/
     │    ├── settings.py
     │    ├── urls.py
     │    └── wsgi.py
-    ├── library
+    ├── library/
     │    ├── migrations/
     │            ├── __init__.py
     │            └── 0001_initial.py
