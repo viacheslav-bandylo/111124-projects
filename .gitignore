@@ -20,3 +20,6 @@ db.sqlite3
 # ignore static files
 staticfiles
 staticfiles/
+
+# django_prod_diagram block
+django_prod_diagram.png
