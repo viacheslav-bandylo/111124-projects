@@ -99,7 +99,7 @@ django_prod/
 2. If you want to do any changes in this project, open in your IDE and go to files "_/models.py_"
 3. Now you should create a file "_.env_", which should contain those all things:
    - SECRET_KEY=""
-   - DEBUG=True / False
+   - DEBUG=False (or True if you want to change something and add new things)
    - ALLOWED_HOSTS=[]
 
    ### Database connection
