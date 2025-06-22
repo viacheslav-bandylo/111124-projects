@@ -133,3 +133,14 @@ django_prod/
     python manage.py runserver
     ```
     → and go to link below :) 
+
+---
+
+## ⚙️ Tech stack / requirements
+▪️Django
+▪️django-environ
+▪️pytest
+▪️python-dotenv
+▪️selenium
+▪️sqlparse
+▪️and some other additional reqs
