@@ -183,3 +183,59 @@ class EventParticipant(models.Model):
 
     def __str__(self):
         return f'{self.event.name}. Member: {self.member.first_name} {self.member.last_name} registered on {self.register_date}'
+
+
+# creating a list of countries
+countries = [
+    ('DE', 'Germany'),
+    ('UK', 'United Kingdom'),
+    ('US', 'United States'),
+    ('PT', 'Portugal'),
+    ('FR', 'France'),
+    ('ES', 'Spain'),
+    ('IT', 'Italy'),
+]
+
+
+# creating a model User
+class User(models.Model):
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    last_name = models.CharField(max_length=70, verbose_name='Family name', null=True, blank=True)
+    age = models.IntegerField(validators=[MinValueValidator(18), MaxValueValidator(120)])
+    rating = models.FloatField(default=0.0)
+    country = models.CharField(choices=countries, default='DE', verbose_name="Country")
+
+
+# creating a model UserInfo
+class UserInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Info")
+    married = models.BooleanField(verbose_name="Married?")
+
+
+# creating a model Actor
+class Actor(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+# creating a model Director
+class Director(models.Model):
+    name = models.CharField(max_length=255)
+    experience = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+# creating a model Movie
+class Movie(models.Model):
+    title = models.CharField(max_length=50)
+    actors = models.ManyToManyField(Actor, related_name='movies')
+    director = models.ForeignKey(Director, on_delete=models.SET_NULL, related_name='movies', null=True, blank=True)
+
+    def __str__(self):
+        if self.director:
+            return f'Title: "{self.title}" | Director: {self.director.name}'
+        return f'{self.title}'
