@@ -40,6 +40,13 @@ class Task(models.Model):
         verbose_name_plural = 'Tasks'
         constraints = [models.UniqueConstraint(fields=['title', 'created_at'], name='unique_task_title_date')]
 
+    @property
+    def short_title(self):
+        if len(self.title) <= 10:
+            return self.title
+        else:
+            return f'{self.title[:10]}<...>'
+
 
 # creating a model SubTask
 class SubTask(models.Model):
@@ -62,6 +69,14 @@ class SubTask(models.Model):
         verbose_name = 'Sub Task'
         verbose_name_plural = 'Sub Tasks'
         constraints = [models.UniqueConstraint(fields=['title'], name='unique_task_title')]
+
+    @property
+    def short_title(self):
+        if len(self.title) <= 10:
+            return self.title
+        else:
+            return f'{self.title[:10]}<...>'
+
 
 # creating model Category
 class Category(models.Model):

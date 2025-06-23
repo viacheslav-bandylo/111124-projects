@@ -2,13 +2,20 @@ from django.contrib import admin
 from TaskManager.models import (
     Task,
     SubTask,
-    Category,)
+    Category,
+)
 
 # registering all models
 
+# creating an Inline form for model SubTask
+class SubTaskInline(admin.StackedInline):
+    model = SubTask
+    extra = 1
+
+
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('title',
+    list_display = ('short_title',
                     'description',
                     'status',
                     'deadline',
@@ -19,10 +26,12 @@ class TaskAdmin(admin.ModelAdmin):
                     'deadline',
                     'created_at',)
 
+    inlines = [SubTaskInline]
+
 
 @admin.register(SubTask)
 class SubTaskAdmin(admin.ModelAdmin):
-    list_display = ('title',
+    list_display = ('short_title',
                     'description',
                     'task',
                     'status',
@@ -33,6 +42,13 @@ class SubTaskAdmin(admin.ModelAdmin):
                     'status',
                     'deadline',
                     'created_at')
+
+    def update_status(self, request, queryset):
+        queryset.update(status='done')
+
+    update_status.short_description = 'Update status to "Done"'
+
+    actions = [update_status]
 
 
 @admin.register(Category)

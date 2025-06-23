@@ -1,6 +1,9 @@
 from django.contrib import admin
+from django.utils import timezone
+
 from library.models import (
     Author,
+    Publisher,
     Book,
     Category,
     Library,
@@ -21,7 +24,7 @@ from library.models import (
 
 # Register your models here.
 admin.site.register(Author)
-admin.site.register(Book)
+# admin.site.register(Book)
 admin.site.register(Category)
 admin.site.register(Library)
 admin.site.register(Member)
@@ -31,6 +34,24 @@ admin.site.register(Review)
 admin.site.register(AuthorDetail)
 admin.site.register(Event)
 admin.site.register(EventParticipant)
+
+class BookAdmin(admin.ModelAdmin):
+    def update_created_at(self, request, queryset):
+        queryset.update(created_at=timezone.now())
+
+    update_created_at.short_description = 'Update "created at" to current time'
+
+    actions = [update_created_at]
+
+class BookInline(admin.StackedInline):
+    model = Book
+    extra = 1
+
+class PublisherAdmin(admin.ModelAdmin):
+    inlines = [BookInline]
+
+admin.site.register(Publisher, PublisherAdmin)
+admin.site.register(Book, BookAdmin)
 
 
 @admin.register(User)
