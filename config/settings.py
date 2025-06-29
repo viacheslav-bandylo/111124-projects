@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     'project',
     'library',
     'TaskManager',
+    'rest_framework',
+    'shop'
 ]
 
 MIDDLEWARE = [

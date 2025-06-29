@@ -9,4 +9,5 @@ urlpatterns = [
     path('app/', include('app.urls')),
     path('project/', include('project.urls')),
     path('taskmanager/', include('TaskManager.urls')),
+    # path('shop/', include('shop.urls')),
 ]
