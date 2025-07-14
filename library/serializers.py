@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Book, Publisher
+from .models import Book, Publisher, Genre
 from .validators import validate_title_length
 
 
@@ -14,6 +14,10 @@ class BookCreateSerializer(serializers.ModelSerializer):
     # created_at = serializers.DateTimeField(read_only=True)
     title = serializers.CharField(validators=[validate_title_length])
     amount_pages = serializers.IntegerField()
+    publisher = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Publisher.objects.all()
+    )
 
     class Meta:
         model = Book
@@ -55,9 +59,23 @@ class BookListSerializer(serializers.ModelSerializer):
 
 
 class BookDetailSerializer(serializers.ModelSerializer):
-    publisher = PublisherSerializer()
+    # publisher = PublisherSerializer()
+    # publisher = serializers.StringRelatedField()
+
+    # publisher = serializers.SlugRelatedField(
+    #     slug_field='slug',
+    #     queryset=Publisher.objects.all()
+    # )
+
+    publisher = serializers.PrimaryKeyRelatedField(queryset=Publisher.objects.all())
+    genres = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True)
 
     class Meta:
         model = Book
         fields = '__all__'
 
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = '__all__'

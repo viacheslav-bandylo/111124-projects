@@ -41,11 +41,18 @@ genre_choice = [
 # creating a model Publisher
 class Publisher(models.Model):
     name = models.CharField(max_length=100)
+    slug = models.SlugField(null=True, blank=True, default='publisher')
     established_date = models.DateField()
 
     def __str__(self):
         return self.name
 
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100, unique=True, blank=True, verbose_name="Genre", choices=genre_choice)
+
+    def __str__(self):
+        return self.name
 
 # creating a model Book
 class Book(models.Model):
@@ -53,7 +60,7 @@ class Book(models.Model):
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, verbose_name="Author", null=True)
     publication_date = models.DateField(null=True, blank=False, verbose_name="Publication Date")
     description = models.TextField(null=True, blank=True, verbose_name="Summary")
-    Genre = models.CharField(max_length=100, null=True, blank=True, verbose_name="Genre", choices=genre_choice)
+    genres = models.ManyToManyField(Genre, related_name='books')
     amount_pages = models.PositiveIntegerField(null=True, blank=True, verbose_name="Amount of Pages",
                                                validators=[MaxValueValidator(10_000)])
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, verbose_name="Publisher", null=True, blank=True)
