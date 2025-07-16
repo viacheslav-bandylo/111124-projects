@@ -67,6 +67,7 @@ class Book(models.Model):
     created_at = models.DateTimeField(null=True, blank=True, verbose_name="Created at")
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, verbose_name="Category", null=True, related_name='books')
     libraries = models.ManyToManyField("Library", related_name='books', verbose_name="Library")
+    price = models.PositiveIntegerField(null=True, blank=True, verbose_name="Price")
 
     @property
     def rating(self):

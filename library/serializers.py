@@ -51,11 +51,13 @@ class BookCreateSerializer(serializers.ModelSerializer):
         return data
     
 
-class BookListSerializer(serializers.ModelSerializer):
+class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
         fields = '__all__'
+
+
 
 
 class BookDetailSerializer(serializers.ModelSerializer):
