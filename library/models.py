@@ -68,6 +68,7 @@ class Book(models.Model):
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, verbose_name="Category", null=True, related_name='books')
     libraries = models.ManyToManyField("Library", related_name='books', verbose_name="Library")
     price = models.PositiveIntegerField(null=True, blank=True, verbose_name="Price")
+    is_banned = models.BooleanField(default=False, verbose_name="Is Banned")
 
     @property
     def rating(self):

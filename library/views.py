@@ -1,11 +1,13 @@
 from django.db.models import Avg
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
-from .models import Book
+from .models import Book, Genre
 from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
 
 # @api_view(['GET', 'POST'])
@@ -111,6 +113,18 @@ class BookListCreateView(ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
+    # Подключаем бэкенды для фильтрации, поиска и сортировки
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+
+    # Поля, по которым можно будет точно фильтровать (author=...)
+    filterset_fields = ['author', 'genres']
+
+    # Поля, по которым будет работать полнотекстовый поиск (search=...)
+    search_fields = ['title', 'description']
+
+    # Поля, по которым можно будет сортировать (ordering=...)
+    ordering_fields = ['publication_date', 'price']
+
     # Переопределяем метод create
     def create(self, request, *args, **kwargs):
         # Копируем данные из запроса, чтобы их можно было изменять
@@ -175,6 +189,29 @@ class BookListCreateView(ListCreateAPIView):
 class BookDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+    # Переопределяем стандартный метод получения объекта
+    def get_object(self):
+        # Сначала получаем pk из URL, как обычно
+        pk = self.kwargs.get('pk')
+
+        try:
+            # Ищем объект, который соответствует pk И НЕ является забаненным
+            book = Book.objects.get(pk=pk, is_banned=False)
+        except Book.DoesNotExist:
+            # Если книга не найдена или забанена, вызываем ошибку 404
+            raise NotFound(detail=f"Book with id '{pk}' not found or is banned.")
+
+        return book
+
+
+    def get_serializer_context(self):
+        # Получаем стандартный контекст
+        context = super().get_serializer_context()
+        # Добавляем в него наш флаг из параметров запроса
+        context['include_related'] = self.request.query_params.get('include_related', 'false').lower() == 'true'
+        return context
+
 
 # @api_view(['GET', 'PUT', 'DELETE'])
 # def book_detail_update_delete(request, pk):
@@ -250,3 +287,16 @@ def create_genre(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     # Возвращаем ошибки, если данные некорректны
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GenreDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+    # Говорим DRF искать объект по полю 'name' в модели Genre
+    lookup_field = 'name'
+
+    # Этот атрибут не обязателен, если имя в URL совпадает с lookup_field,
+    # но для ясности лучше его указать.
+    lookup_url_kwarg = 'name'
+

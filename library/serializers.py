@@ -57,7 +57,16 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = '__all__'
 
+    def to_representation(self, instance):
+        # Получаем стандартное представление объекта
+        representation = super().to_representation(instance)
 
+        # Проверяем флаг, который мы передали из представления
+        if not self.context.get('include_related'):
+            # Если флаг false, удаляем поле 'genres' из ответа
+            representation.pop('genres', None)
+
+        return representation
 
 
 class BookDetailSerializer(serializers.ModelSerializer):
