@@ -3,6 +3,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 
+from library.managers import SoftDeleteManager
+
 
 class Author(models.Model):
     first_name = models.CharField(max_length=100, verbose_name="First Name")
@@ -69,10 +71,24 @@ class Book(models.Model):
     libraries = models.ManyToManyField("Library", related_name='books', verbose_name="Library")
     price = models.PositiveIntegerField(null=True, blank=True, verbose_name="Price")
     is_banned = models.BooleanField(default=False, verbose_name="Is Banned")
+    is_deleted = models.BooleanField(default=False)  # Поле для мягкого удаления
 
     @property
     def rating(self):
         return self.reviews.all().aggregate(models.Avg('rating'))['rating__avg']
+
+    objects = SoftDeleteManager()
+    all_objects = models.Manager()
+
+    def delete(self, *args, **kwargs):
+        """Переопределяем стандартный метод удаления."""
+        self.is_deleted = True  # Устанавливаем флаг
+        self.save()             # Сохраняем изменения
+
+    def restore(self):
+        """Метод для восстановления записи."""
+        self.is_deleted = False
+        self.save()
 
     def __str__(self):
         return f'{self.title}'

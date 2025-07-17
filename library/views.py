@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view, action
@@ -8,8 +10,9 @@ from rest_framework import status, filters, mixins
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, GenericViewSet
+from django.db import reset_queries, connection, transaction
 
-from .models import Book, Genre
+from .models import Book, Genre, Publisher
 from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
 
 # @api_view(['GET', 'POST'])
@@ -207,6 +210,8 @@ class BookDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
         return book
 
 
+
+
     def get_serializer_context(self):
         # Получаем стандартный контекст
         context = super().get_serializer_context()
@@ -349,3 +354,107 @@ def books_by_date_view(request, year=None, month=None, day=None):
     serializer = BookSerializer(books, many=True)
 
     return Response({'date': f"{year}-{month}-{day}", 'books': serializer.data})
+
+@api_view(['GET'])
+def lazy_load_demo(request):
+    # Endpoint for testing lazy load
+
+    reset_queries()
+
+    # Этот код ОЧЕНЬ НЕЭФФЕКТИВЕН!
+    # books = Book.objects.all()  # 1-й запрос: получить ВСЕ книги
+
+    # Оптимизация с помощью select_related
+    books = Book.objects.select_related('publisher').all()  # Всего ОДИН запрос!
+
+    print(connection.queries)
+
+    for book in books:
+        # Для КАЖДОЙ книги делается ОТДЕЛЬНЫЙ запрос к БД, чтобы получить издателя
+        print(book.publisher.name)  # N дополнительных запросов
+
+    print(connection.queries)
+
+    print("#" * 100)
+
+    reset_queries()
+
+    # Оптимизация с помощью prefetch_related
+    books = Book.objects.prefetch_related('genres').all()  # Всего ДВА запроса!
+
+    for book in books:
+        print("Книга:", book.title)
+        # Доступ к book.genres.all() теперь не вызывает новых запросов
+        for genre in book.genres.all():
+            print("  - Жанр:", genre.name)
+
+    print(connection.queries)
+
+    print("#" * 100)
+
+    reset_queries()
+
+    books = Book.objects.select_related('publisher').prefetch_related('genres').all()  # Все еще 2 запроса!
+
+    for book in books:
+        print("Книга:", book.title)
+        print(book.publisher.name)
+        # Доступ к book.genres.all() теперь не вызывает новых запросов
+        for genre in book.genres.all():
+            print("  - Жанр:", genre.name)
+
+    print(connection.queries)
+
+    return Response({'data': 'success'})
+
+
+@api_view(['POST'])
+def create_book_and_publisher_view(request):
+    try:
+        # Все, что находится внутри этого блока, — одна транзакция
+        with transaction.atomic():
+            # 1. Создаем издателя
+            publisher = Publisher.objects.create(name="Super Publisher", established_date=datetime.now())
+
+            # Искусственно создадим ошибку, чтобы проверить откат
+            if not request.data.get('title'):
+                raise ValueError("Название книги обязательно!")
+
+            # 2. Создаем книгу
+            # Этот код не выполнится, если возникнет ошибка выше
+            book = Book.objects.create(
+                title=request.data.get('title'),
+                publisher=publisher
+            )
+        # Если блок with завершился без ошибок, транзакция фиксируется (commit)
+
+    except Exception as e:
+        # Если внутри блока with произошла любая ошибка,
+        # все изменения в БД (создание Publisher) будут отменены (rollback).
+        return Response({'error': str(e)}, status=400)
+
+    return Response({'status': 'Book and Publisher created'})
+
+
+@api_view(['POST'])
+@transaction.atomic  # Декоратор применяет транзакцию ко всей функции
+def create_book_and_publisher_view(request):
+    try:
+        # 1. Создаем издателя
+        publisher = Publisher.objects.create(name="Super Publisher")
+
+        # 2. Создаем книгу
+        book = Book.objects.create(
+            title="A New Book",
+            publisher=publisher
+        )
+
+        # ... другая логика ...
+
+    except Exception as e:
+        # Если здесь произойдет ошибка, вся транзакция будет отменена
+        # и ни книга, ни издатель не будут сохранены в БД.
+        return Response({'error': str(e)}, status=400)
+
+    serializer = BookSerializer(book)
+    return Response(serializer.data)
