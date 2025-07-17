@@ -1,12 +1,14 @@
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.response import Response
-from rest_framework import status, filters
+from rest_framework import status, filters, mixins
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, GenericViewSet
+
 from .models import Book, Genre
 from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
 
@@ -300,3 +302,50 @@ class GenreDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     # но для ясности лучше его указать.
     lookup_url_kwarg = 'name'
 
+
+# class GenreReadOnlyView(ReadOnlyModelViewSet):
+#     queryset = Genre.objects.all()
+#     serializer_class = GenreSerializer
+#
+# class GenreListRetrieveUpdateViewSet(mixins.ListModelMixin,
+#                                      mixins.RetrieveModelMixin,
+#                                      mixins.UpdateModelMixin,
+#                                      GenericViewSet):
+#     queryset = Genre.objects.all()
+#     serializer_class = GenreSerializer
+
+
+class GenreViewSet(ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+    # Наш новый кастомный метод
+    @action(detail=False, methods=['get'])
+    def statistic(self, request):
+        """
+        Возвращает количество книг для каждого жанра.
+        """
+        # С помощью annotate добавляем к каждому жанру поле book_count
+        genres_with_book_counts = Genre.objects.annotate(book_count=Count('books'))
+
+        # Формируем данные для ответа
+        data = [
+            {
+                "id": genre.id,
+                "genre": genre.name,
+                "book_count": genre.book_count
+            }
+            for genre in genres_with_book_counts
+        ]
+        return Response(data)
+
+
+@api_view(['GET'])
+def books_by_date_view(request, year=None, month=None, day=None):
+    # Django автоматически передает захваченные 'year', 'month', 'day' в функцию
+    books = Book.objects.filter(publication_date__year=year,
+                                publication_date__month=month,
+                                publication_date__day=day)
+    serializer = BookSerializer(books, many=True)
+
+    return Response({'date': f"{year}-{month}-{day}", 'books': serializer.data})
