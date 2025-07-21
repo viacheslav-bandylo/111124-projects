@@ -77,4 +77,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         return CustomerCreateUpdateSerializer
 
 
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return OrderSerializer
+        return OrderCreateUpdateSerializer
 
