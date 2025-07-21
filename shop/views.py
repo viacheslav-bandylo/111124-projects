@@ -85,3 +85,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             return OrderSerializer
         return OrderCreateUpdateSerializer
 
+
+class OrderItemViewSet(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return OrderItemSerializer
+        return OrderItemCreateUpdateSerializer
+
