@@ -130,6 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
@@ -144,14 +145,26 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'django_sql.log',
+            'filename': BASE_DIR / 'db.log', # Файл для логов
         }
     },
     'loggers': {
         'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file'], # Куда отправлять логи
+            'level': 'DEBUG', # Уровень логирования
         }
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,  # Теперь по умолчанию на всех страницах будет 10 элементов
+
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 10,  # Здесь PAGE_SIZE работает как 'default_limit'
+
+    # Указываем полный путь к нашему классу!
+    # 'DEFAULT_PAGINATION_CLASS': 'config.paginations.CustomCursorPagination',
+    # 'PAGE_SIZE': 5,
 }
 

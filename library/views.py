@@ -8,7 +8,7 @@ from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveU
 from rest_framework.response import Response
 from rest_framework import status, filters, mixins
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination, CursorPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, GenericViewSet
 from django.db import reset_queries, connection, transaction
 
@@ -110,6 +110,17 @@ from .serializers import BookSerializer, BookDetailSerializer, BookCreateSeriali
 #         # 4. Возвращаем созданный объект и статус 201 CREATED
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+# Создаем свой класс пагинации
+class BookPagination(PageNumberPagination):
+    page_size = 3  # Количество элементов на странице по умолчанию
+    page_size_query_param = 'page_size' # Имя параметра в URL для задания размера страницы
+    max_page_size = 100 # Максимальное количество элементов на странице
+
+# 1. Настраиваем класс пагинации
+class BookCursorPagination(CursorPagination):
+    page_size = 5
+    ordering = 'publication_date'  # ВАЖНО: нужно указать поле для сортировки
+
 # Этот класс заменяет наш BookListCreateView
 # Он наследуется от ListCreateAPIView, который уже умеет:
 # - обрабатывать GET для получения списка (List)
@@ -117,6 +128,9 @@ from .serializers import BookSerializer, BookDetailSerializer, BookCreateSeriali
 class BookListCreateView(ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    # pagination_class = BookPagination  # Вот здесь мы и подключаем пагинацию
+    # pagination_class = LimitOffsetPagination  # Просто подключаем встроенный класс
+    pagination_class = BookCursorPagination
 
     # Подключаем бэкенды для фильтрации, поиска и сортировки
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -458,3 +472,4 @@ def create_book_and_publisher_view(request):
 
     serializer = BookSerializer(book)
     return Response(serializer.data)
+
