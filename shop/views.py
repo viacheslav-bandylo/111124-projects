@@ -68,5 +68,13 @@ class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
 
 
+class CustomerViewSet(viewsets.ModelViewSet):
+    queryset = Customer.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CustomerSerializer
+        return CustomerCreateUpdateSerializer
+
 
 
