@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
@@ -27,6 +28,8 @@ class ProductListCreateView(ListCreateAPIView):
     Представление для получения списка продуктов и создания нового продукта.
     """
     queryset = Product.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category', 'price']
 
     # Этот метод позволяет нам динамически выбирать сериалайзер
     def get_serializer_class(self):
@@ -70,6 +73,9 @@ class AddressViewSet(viewsets.ModelViewSet):
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['first_name', 'last_name']
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
