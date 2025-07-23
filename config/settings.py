@@ -166,5 +166,16 @@ REST_FRAMEWORK = {
     # Указываем полный путь к нашему классу!
     # 'DEFAULT_PAGINATION_CLASS': 'config.paginations.CustomCursorPagination',
     # 'PAGE_SIZE': 5,
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        # Здесь могут быть и другие классы аутентификации, если они нужны.
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
+
+
 
