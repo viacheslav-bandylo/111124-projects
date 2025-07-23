@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db.models import Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
@@ -21,7 +21,8 @@ from .serializers import BookSerializer, BookDetailSerializer, BookCreateSeriali
 class ProtectedDataView(APIView):
     # Указываем, какие классы аутентификации использовать для этого представления.
     # Здесь мы явно переопределяем или подтверждаем BasicAuthentication.
-    authentication_classes = [BasicAuthentication]
+    # authentication_classes = [BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
     # Указываем, какие классы разрешений использовать.
     # IsAuthenticated означает, что только аутентифицированные пользователи имеют доступ.
     permission_classes = [IsAuthenticated]

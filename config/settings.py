@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'library',
     'TaskManager',
     'rest_framework',
+    'rest_framework.authtoken',
     'shop',
 ]
 
@@ -168,8 +169,10 @@ REST_FRAMEWORK = {
     # 'PAGE_SIZE': 5,
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        # Здесь могут быть и другие классы аутентификации, если они нужны.
+        'rest_framework.authentication.TokenAuthentication',
+        # Если вы хотите использовать несколько методов, добавьте их здесь.
+        # Например: 'rest_framework.authentication.SessionAuthentication',
+        #           'rest_framework.authentication.BasicAuthentication',
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [
