@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 import environ
 
@@ -169,7 +170,8 @@ REST_FRAMEWORK = {
     # 'PAGE_SIZE': 5,
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
         # Если вы хотите использовать несколько методов, добавьте их здесь.
         # Например: 'rest_framework.authentication.SessionAuthentication',
         #           'rest_framework.authentication.BasicAuthentication',
@@ -180,5 +182,8 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=6),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    # Можно добавить и другие настройки, например, для токенов одноразового использования
+}

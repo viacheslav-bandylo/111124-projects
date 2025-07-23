@@ -1,12 +1,13 @@
 from datetime import datetime
 
+from colorama.ansi import clear_line
 from django.db.models import Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status, filters, mixins
 from rest_framework.views import APIView
@@ -18,11 +19,38 @@ from .models import Book, Genre, Publisher
 from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
 
 
+class ReadOnlyOrAuthenticatedView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        return Response({"message": "This is readable by anyone, but modifiable only by authenticated users."})
+
+    def post(self, request):
+        # Этот метод будет доступен только аутентифицированным пользователям
+        return Response({"message": "Data created by authenticated user!"})
+
+class AdminView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        return Response({"message": "Hello, Admin!"})
+
+
+class PublicView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        return Response(status=status.HTTP_200_OK, data={'message': 'This endpoint have access for anyone!'})
+
 class ProtectedDataView(APIView):
     # Указываем, какие классы аутентификации использовать для этого представления.
     # Здесь мы явно переопределяем или подтверждаем BasicAuthentication.
     # authentication_classes = [BasicAuthentication]
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
+
+    # Если JWTAuthentication установлен как DEFAULT_AUTHENTICATION_CLASSES,
+    # здесь можно просто указать разрешения. DRF сам проверит токен.
+
     # Указываем, какие классы разрешений использовать.
     # IsAuthenticated означает, что только аутентифицированные пользователи имеют доступ.
     permission_classes = [IsAuthenticated]
