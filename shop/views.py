@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny, IsAdminUser
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from shop.models import Category, Supplier
 from shop.serializers import *
@@ -31,6 +34,15 @@ class ProductListCreateView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['category', 'price']
 
+    # Явно указываем классы аутентификации для этого представления.
+    # Это переопределит глобальные настройки, если они есть.
+    # authentication_classes = [BasicAuthentication]
+    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [JWTAuthentication]
+
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     # Этот метод позволяет нам динамически выбирать сериалайзер
     def get_serializer_class(self):
         # Для безопасных методов (только чтение), таких как GET
@@ -46,6 +58,9 @@ class ProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     """
     queryset = Product.objects.all()
 
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAdminUser]
+
     def get_serializer_class(self):
         # Для чтения данных
         if self.request.method == 'GET':
@@ -56,6 +71,8 @@ class ProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
 class ProductDetailViewSet(viewsets.ModelViewSet):
     queryset = ProductDetail.objects.all()
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     # Этот метод позволяет нам динамически выбирать сериалайзер
     def get_serializer_class(self):
@@ -69,10 +86,15 @@ class ProductDetailViewSet(viewsets.ModelViewSet):
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAdminUser]
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
+
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['first_name', 'last_name']
@@ -86,6 +108,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
 
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAuthenticated]
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return OrderSerializer
@@ -94,6 +119,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
+
+    # Явно указываем классы разрешений для этого представления.
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
