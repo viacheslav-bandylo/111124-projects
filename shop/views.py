@@ -106,15 +106,32 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
-
+    authentication_classes = [BasicAuthentication]
     # Явно указываем классы разрешений для этого представления.
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Этот метод определяет список объектов для отображения.
+        Мы фильтруем заказы, оставляя только те, где поле `user`
+        совпадает с текущим пользователем.
+        Таким образом, каждый пользователь видит только свои заказы.
+        """
+        return Order.objects.filter(user=self.request.user)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return OrderSerializer
         return OrderCreateUpdateSerializer
+
+    # Переопределяем метод perform_create
+    def perform_create(self, serializer):
+        """
+        При создании заказа мы автоматически подставляем текущего пользователя
+        в поле `user`. `self.request.user` — это и есть текущий
+        авторизованный пользователь.
+        """
+        serializer.save(user=self.request.user)
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):

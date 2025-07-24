@@ -16,7 +16,7 @@ router.register('supplier', SupplierViewSet)
 router.register('product-detail', ProductDetailViewSet)
 router.register('address', AddressViewSet)
 router.register('customer', CustomerViewSet)
-router.register('order', OrderViewSet)
+router.register('order', OrderViewSet, basename='order')
 router.register('order-item', OrderItemViewSet)
 
 # Основной список маршрутов нашего приложения.

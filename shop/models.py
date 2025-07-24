@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from itertools import product
 
@@ -83,6 +84,7 @@ class Customer(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
     order_date = models.DateTimeField(auto_now_add=True, editable=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name='orders')
 
     class Meta:
         ordering = ['-order_date']
