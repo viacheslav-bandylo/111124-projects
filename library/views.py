@@ -7,7 +7,8 @@ from rest_framework.authentication import BasicAuthentication, TokenAuthenticati
 from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly, \
+    DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework import status, filters, mixins
 from rest_framework.views import APIView
@@ -407,6 +408,7 @@ class GenreDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = [DjangoModelPermissions] # Используем встроенный класс разрешений
 
     # Наш новый кастомный метод
     @action(detail=False, methods=['get'])
