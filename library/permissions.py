@@ -14,3 +14,10 @@ class IsOwnerOrReadOnly(BasePermission):
 
         # Разрешения на запись (POST, PUT, PATCH, DELETE) даем только владельцу объекта.
         return obj.owner == request.user
+
+
+class CanGetGenresStatisticPermission(BasePermission):
+    def has_permission(self, request, view):
+        # Проверяем, есть ли у пользователя право 'library.can_get_statistic'
+        # 'library' - это имя вашего Django-приложения
+        return request.user.has_perm('library.can_get_statistic')

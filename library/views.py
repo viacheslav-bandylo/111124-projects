@@ -17,7 +17,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, GenericV
 from django.db import reset_queries, connection, transaction
 
 from .models import Book, Genre, Publisher
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, CanGetGenresStatisticPermission
 from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
 
 
@@ -408,7 +408,7 @@ class GenreDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [DjangoModelPermissions] # Используем встроенный класс разрешений
+    permission_classes = [DjangoModelPermissions, CanGetGenresStatisticPermission] # Используем встроенный класс разрешений
 
     # Наш новый кастомный метод
     @action(detail=False, methods=['get'])

@@ -54,6 +54,14 @@ class Publisher(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=100, unique=True, blank=True, verbose_name="Genre", choices=genre_choice)
 
+    # Добавляем наш внутренний класс Meta
+    class Meta:
+        # В атрибуте permissions мы объявляем кастомные права
+        permissions = [
+            # Формат: ("имя_в_коде", "человекочитаемое_описание")
+            ("can_get_statistic", "Can get genres statistic"),
+        ]
+
     def __str__(self):
         return self.name
 
