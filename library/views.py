@@ -16,6 +16,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, GenericV
 from django.db import reset_queries, connection, transaction
 
 from .models import Book, Genre, Publisher
+from .permissions import IsOwnerOrReadOnly
 from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
 
 
@@ -276,20 +277,21 @@ class UserBookListView(ListAPIView):
 class BookDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsOwnerOrReadOnly]
 
     # Переопределяем стандартный метод получения объекта
-    def get_object(self):
-        # Сначала получаем pk из URL, как обычно
-        pk = self.kwargs.get('pk')
-
-        try:
-            # Ищем объект, который соответствует pk И НЕ является забаненным
-            book = Book.objects.get(pk=pk, is_banned=False)
-        except Book.DoesNotExist:
-            # Если книга не найдена или забанена, вызываем ошибку 404
-            raise NotFound(detail=f"Book with id '{pk}' not found or is banned.")
-
-        return book
+    # def get_object(self):
+    #     # Сначала получаем pk из URL, как обычно
+    #     pk = self.kwargs.get('pk')
+    #
+    #     try:
+    #         # Ищем объект, который соответствует pk И НЕ является забаненным
+    #         book = Book.objects.get(pk=pk, is_banned=False)
+    #     except Book.DoesNotExist:
+    #         # Если книга не найдена или забанена, вызываем ошибку 404
+    #         raise NotFound(detail=f"Book with id '{pk}' not found or is banned.")
+    #
+    #     return book
 
 
 
