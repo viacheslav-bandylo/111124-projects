@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from shop.serializers import ProductDetailCreateUpdateSerializer, OrderItemCreateUpdateSerializer
 from shop.views import CategoryViewSet, SupplierViewSet, ProductListCreateView, ProductRetrieveUpdateDestroyView, \
-    ProductDetailViewSet, AddressViewSet, CustomerViewSet, OrderViewSet, OrderItemViewSet
+    ProductDetailViewSet, AddressViewSet, CustomerViewSet, OrderViewSet, OrderItemViewSet, OrderStatisticsView
 
 # Создаем экземпляр роутера
 router = DefaultRouter()
@@ -25,4 +25,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('product/', ProductListCreateView.as_view(), name='product-list-create'),
     path('product/<int:pk>/', ProductRetrieveUpdateDestroyView.as_view(), name='product-retrieve-update-destroy'),
+    path('order-statistics/', OrderStatisticsView.as_view(), name='order-statistics'),
 ]

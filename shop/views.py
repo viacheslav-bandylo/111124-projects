@@ -4,9 +4,12 @@ from rest_framework import viewsets
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny, IsAdminUser
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.response import Response
 
 from shop.models import Category, Supplier
+from shop.permissions import IsOwnerOrReadOnly, CanViewOrderStatistics
 from shop.serializers import *
 
 
@@ -108,7 +111,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     authentication_classes = [BasicAuthentication]
     # Явно указываем классы разрешений для этого представления.
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
         """
@@ -144,4 +147,16 @@ class OrderItemViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return OrderItemSerializer
         return OrderItemCreateUpdateSerializer
+
+
+class OrderStatisticsView(APIView):
+    # Применяем наше новое разрешение и IsAuthenticated
+    permission_classes = [IsAuthenticated, CanViewOrderStatistics]
+
+    def get(self, request):
+        total_orders = Order.objects.count()
+        data = {
+            'total_orders': total_orders,
+        }
+        return Response(data)
 

@@ -108,6 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = env('AUTH_USER_MODEL', default='auth.User')
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
