@@ -135,33 +135,33 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'db.log', # Файл для логов
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['console', 'file'], # Куда отправлять логи
-            'level': 'DEBUG', # Уровень логирования
-        }
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         }
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#         },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': BASE_DIR / 'db.log', # Файл для логов
+#         }
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['console', 'file'], # Куда отправлять логи
+#             'level': 'DEBUG', # Уровень логирования
+#         }
+#     }
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -189,7 +189,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     # Время жизни access токена (короткое)
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=6),
     # Время жизни refresh токена (длинное)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
     # Включаем ротацию refresh токенов для повышения безопасности
@@ -199,3 +199,5 @@ SIMPLE_JWT = {
     # Указываем тип заголовка авторизации
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

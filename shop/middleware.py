@@ -19,7 +19,7 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         # Этот метод вызывается для КАЖДОГО ответа
         # Проверяем, был ли ответ с ошибкой "Token is invalid or expired"
-        if response.status_code == 401 and b"Token is invalid or expired" in response.content:
+        if response.status_code == 401 and b"Given token not valid for any token type" in response.content:
             refresh_token_cookie = request.COOKIES.get('refresh_token')
 
             # Если есть refresh_token, пытаемся обновить access_token
@@ -42,7 +42,7 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
                         # Это позволяет "бесшовно" завершить исходный запрос пользователя
                         view, args, kwargs = resolve(request.path_info)
                         request.META['HTTP_AUTHORIZATION'] = f'Bearer {new_access_token}'
-                        kwargs['request'] = request
+                        # kwargs['request'] = request
                         new_response = view(request, *args, **kwargs)
 
                         # Устанавливаем куки на новый ответ
