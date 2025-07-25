@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'shop',
 ]
@@ -46,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'shop.middleware.JWTAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -186,7 +188,14 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=6),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    # Можно добавить и другие настройки, например, для токенов одноразового использования
+    # Время жизни access токена (короткое)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    # Время жизни refresh токена (длинное)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
+    # Включаем ротацию refresh токенов для повышения безопасности
+    'ROTATE_REFRESH_TOKENS': True,
+    # Добавляем старый refresh токен в черный список после его использования
+    'BLACKLIST_AFTER_ROTATION': True,
+    # Указываем тип заголовка авторизации
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
