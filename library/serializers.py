@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Book, Publisher, Genre
+from .models import Book, Publisher, Genre, SimpleBook
 from .validators import validate_title_length
 
 
@@ -91,4 +91,10 @@ class BookDetailSerializer(serializers.ModelSerializer):
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
+        fields = '__all__'
+
+
+class SimpleBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SimpleBook
         fields = '__all__'

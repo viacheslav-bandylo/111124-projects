@@ -16,9 +16,10 @@ from rest_framework.pagination import PageNumberPagination, LimitOffsetPaginatio
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, GenericViewSet
 from django.db import reset_queries, connection, transaction
 
-from .models import Book, Genre, Publisher
+from .models import Book, Genre, Publisher, SimpleBook
 from .permissions import IsOwnerOrReadOnly, CanGetGenresStatisticPermission
-from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer
+from .serializers import BookSerializer, BookDetailSerializer, BookCreateSerializer, GenreSerializer, \
+    SimpleBookSerializer
 
 
 class ReadOnlyOrAuthenticatedView(APIView):
@@ -545,3 +546,7 @@ def create_book_and_publisher_view(request):
     serializer = BookSerializer(book)
     return Response(serializer.data)
 
+
+class SimpleBookListCreateView(ListCreateAPIView):
+    queryset = SimpleBook.objects.all()
+    serializer_class = SimpleBookSerializer

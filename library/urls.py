@@ -5,7 +5,8 @@ from .views import create_genre, BookListCreateView, BookDetailUpdateDeleteView,
     ExpensiveBooksView, GenreDetailUpdateDeleteView, GenreViewSet, \
     books_by_date_view, lazy_load_demo, create_book_and_publisher_view, \
     ProtectedDataView, PublicView, AdminView, \
-    ReadOnlyOrAuthenticatedView, UserBookListView  # book_list_create, book_detail_update_delete,
+    ReadOnlyOrAuthenticatedView, UserBookListView, \
+    SimpleBookListCreateView  # book_list_create, book_detail_update_delete,
 
 router = DefaultRouter()
 
@@ -34,4 +35,6 @@ urlpatterns = [
     path('public/', PublicView.as_view(), name='public-data'),
     path('for-admin/', AdminView.as_view(), name='admin-data'),
     path('read-anon/', ReadOnlyOrAuthenticatedView.as_view(), name='read-anon'),
+
+    path('simple-books/', SimpleBookListCreateView.as_view(), name='simple-book-list-create'),
 ]

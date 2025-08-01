@@ -285,3 +285,15 @@ class Movie(models.Model):
         if self.director:
             return f'Title: "{self.title}" | Director: {self.director.name}'
         return f'{self.title}'
+
+
+class SimpleBook(models.Model):
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
+    publication_year = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.title}'
+
+    def is_classic(self):
+        return self.publication_year < 2000
