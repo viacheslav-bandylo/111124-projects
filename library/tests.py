@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 
 import pytest
 from .models import SimpleBook
+from .factories import SimpleBookFactory
 
 # Пометка, которая говорит pytest, что этот тест может работать с базой данных
 @pytest.mark.django_db
@@ -12,12 +13,18 @@ def test_simple_book_model():
     """
     Тест для проверки создания объекта книги и работы кастомного метода is_classic().
     """
-    # 1. Arrange (Подготовка): Создаем объект в памяти
-    book = SimpleBook.objects.create(
-        title="Война и мир",
-        author="Лев Толстой",
-        publication_year=1869
-    )
+    # # 1. Arrange (Подготовка): Создаем объект в памяти
+    # book = SimpleBook.objects.create(
+    #     title="Война и мир",
+    #     author="Лев Толстой",
+    #     publication_year=1869
+    # )
+
+    book = SimpleBookFactory(title="Конкретное название")  # Можно переопределить поля
+    another_book = SimpleBookFactory()  # Создаст книгу со случайными данными
+
+    # А если нужно много книг? Легко!
+    five_books = SimpleBookFactory.create_batch(5)
 
     # 2. Act (Действие) & Assert (Проверка)
     # Проверяем, что объект создался и его поля соответствуют ожидаемым
