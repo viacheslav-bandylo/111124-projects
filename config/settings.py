@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -115,7 +116,27 @@ AUTH_USER_MODEL = env('AUTH_USER_MODEL', default='auth.User')
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+# 1. Включаем систему перевода Django
+USE_I18N = True
+
+# 2. Включаем локализацию форматов (даты, числа)
+USE_L10N = True
+
+# 3. Язык по умолчанию, если другой не выбран
 LANGUAGE_CODE = 'en-us'
+
+# 4. Список всех языков, которые будет поддерживать сайт
+# Это список кортежей (код языка, название)
+LANGUAGES = [
+    ('en', 'English'),
+    ('de', 'Deutsch'),
+]
+
+# 5. Путь, где Django будет искать файлы с переводами
+# Обычно это папка 'locale' в корне проекта
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 TIME_ZONE = 'UTC'
 

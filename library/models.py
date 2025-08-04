@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
 
 from library.managers import SoftDeleteManager
 
@@ -288,8 +290,8 @@ class Movie(models.Model):
 
 
 class SimpleBook(models.Model):
-    title = models.CharField(max_length=255)
-    author = models.CharField(max_length=255)
+    title = models.CharField(_('title'), max_length=255)
+    author = models.CharField(_('author'), max_length=255)
     publication_year = models.PositiveIntegerField()
 
     def __str__(self):

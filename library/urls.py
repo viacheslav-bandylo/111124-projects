@@ -1,3 +1,4 @@
+from django.conf.urls.i18n import i18n_patterns
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
@@ -35,6 +36,6 @@ urlpatterns = [
     path('public/', PublicView.as_view(), name='public-data'),
     path('for-admin/', AdminView.as_view(), name='admin-data'),
     path('read-anon/', ReadOnlyOrAuthenticatedView.as_view(), name='read-anon'),
-
     path('simple-books/', SimpleBookListCreateView.as_view(), name='simple-book-list-create'),
 ]
+

@@ -1,3 +1,4 @@
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
@@ -31,7 +32,6 @@ urlpatterns = [
     path('app/', include('app.urls')),
     path('project/', include('project.urls')),
     path('taskmanager/', include('TaskManager.urls')),
-    path('library/', include('library.urls')),
 
     path('shop/', include('shop.urls')),
 
@@ -43,3 +43,9 @@ urlpatterns = [
 
     path('get-token/', obtain_auth_token, name='get_token'), # Маршрут для получения токена
 ]
+
+
+urlpatterns += i18n_patterns(
+    path('library/', include('library.urls')),
+    prefix_default_language=False,
+)
